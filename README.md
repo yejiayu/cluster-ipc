@@ -38,3 +38,5 @@ co(function* gen() {
   });
 }).catch(error => console.error(error.stack));
 ````
+
+> To be perfect
