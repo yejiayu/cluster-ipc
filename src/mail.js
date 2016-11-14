@@ -6,7 +6,7 @@ const debug = require('debug')('socket-msessenger:mail');
 
 
 class Mail extends EventEmitter {
-  constructor({ from, id, client, isReply = false, timeout }) {
+  constructor({ from, id, client, isReply = false, timeout } = {}) {
     super();
 
     this.client = client;
@@ -23,11 +23,11 @@ class Mail extends EventEmitter {
     const { from, id, message, to, isReply } = mail;
 
     return new Mail({ from, id, client, isReply })
-        .target(to)
+        .setTo(to)
         .setMessage(message);
   }
 
-  target(to) {
+  setTo(to) {
     this.to = to;
 
     return this;
@@ -65,7 +65,7 @@ class Mail extends EventEmitter {
     const { from: to, to: from, client, id } = this;
 
     return new Mail({ from, client, id, isReply: true })
-        .target(to)
+        .setTo(to)
         .setMessage(message)
         .send();
   }

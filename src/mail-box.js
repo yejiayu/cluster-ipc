@@ -13,7 +13,7 @@ const Client = require('./socket/client');
 const Mail = require('./mail');
 
 class MailBox extends EventEmitter {
-  constructor({ name, sockPath = path.join(os.tmpdir(), 'midway.sock') }) {
+  constructor({ name, sockPath = path.join(os.tmpdir(), 'midway.sock') } = {}) {
     super();
 
     assert(is.string(name) && name.length > 0, 'options.name required');
