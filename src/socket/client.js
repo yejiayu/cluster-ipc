@@ -26,7 +26,8 @@ class Client extends SDKBase {
       // TODO: error message
       throw new Error();
     }
-
+    
+    this.socket.name = name;
     this.name = name;
     this.hasReady = false;
 
@@ -34,7 +35,7 @@ class Client extends SDKBase {
   }
 
   init() {
-    this.dataEvent = new DataEvent(this.socket);
+    this.dataEvent = new DataEvent(this.socket, this.name);
     this[BIND]();
 
     this.register();
@@ -64,14 +65,13 @@ class Client extends SDKBase {
 
   send(mail) {
     const data = { action: ACTION.SEND_MAIL, mail };
-    // debug(data);
-    return this.socket.write(encode(data));
+    this.socket.write(encode(data));
   }
 
   register() {
     const data = { action: ACTION.REGISTER, payload: { name: this.name } };
 
-    return this.socket.write(encode(JSON.stringify(data)));
+    this.socket.write(encode(JSON.stringify(data)));
   }
 }
 

@@ -6,88 +6,60 @@ const sdkBase = require('sdk-base');
 const is = require('is-type-of');
 const debug = require('debug')('socket-msessenger:server');
 
-const { encode, decode } = require('../util');
+const Connecter = require('./connecter');
 const { ACTION } = require('../constant');
-const DataEvent = require('./data_event');
 
 class Server extends sdkBase {
   constructor() {
     super();
 
-    this.socketMap = new Map();
+    this.connecterMap = new Map();
 
-    this.init();
+    this.server = net.createServer(socket => this.init(socket));
   }
 
-  init() {
-    this.server = net.createServer(socket => this.initClient(socket));
-  }
+  init(socket) {
+    const connecter = new Connecter(socket);
+    connecter.init();
 
-  bind({ name, dataEvent, socket }) {
-    socket.on('error', error => this.emit('error', error));
-    dataEvent.on('dataComplete', data => this.dataCompleteHandler(data));
-    socket.on('close', () => {
-      socket.removeAllListeners();
-      dataEvent.removeAllListeners();
+    connecter.once('data', ({ action, payload }) => {
+      const { name } = payload;
 
-      this.socketMap.delete(name);
-      this.emit('close', name);
-    });
-  }
-
-  initClient(socket) {
-    const dataEvent = new DataEvent(socket);
-
-    dataEvent.once('dataComplete', data => {
-      const { action, payload } = decode(data);
-
-      if (action === ACTION.REGISTER) {
-        this.register({ payload, dataEvent, socket });
+      if (action !== ACTION.REGISTER || !is.string(name)) {
+        connecter.close();
       }
+
+      connecter.replyRegister();
+      connecter.on('data', data => this.dataHandler(data));
+      connecter.on('error', error => this.emit('error', error));
+
+      this.connecterMap.set(name, connecter);
     });
   }
 
-  dataCompleteHandler(data) {
-    const { action, mail } = decode(data);
-
+  dataHandler({ action, mail }) {
     if (action === ACTION.SEND_MAIL) {
       // TODO: 发送邮件
       this.emit('mail', mail);
     }
   }
 
-  register({ payload, dataEvent, socket }) {
-    const { name } = payload;
-
-    this.socketMap.set(name, socket);
-    this.bind({ name, dataEvent, socket });
-
-    const success = encode({ ready: true });
-    return socket.write(success);
-  }
-
-  getClientNameList() {
-    return Array.from(this.socketMap.keys());
+  getConnecterNameList() {
+    return Array.from(this.connecterMap.keys());
   }
 
   send(mail) {
     const { to } = mail;
     const reg = new RegExp(to);
 
-    const matchList = this.getClientNameList().filter(name => reg.test(name));
+    const matchList = this.getConnecterNameList().filter(name => reg.test(name));
 
     if (!is.array(matchList) || matchList.length <= 0) {
       return false;
     }
-
     matchList.forEach(name => {
-      const socket = this.socketMap.get(name);
-
-      const data = {
-        action: ACTION.SEND_MAIL,
-        mail,
-      };
-      socket.write(encode(data));
+      const connecter = this.connecterMap.get(name);
+      connecter.send(mail);
     });
 
     return true;

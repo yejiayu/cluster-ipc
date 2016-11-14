@@ -33,7 +33,7 @@ class Mail extends EventEmitter {
     return this;
   }
 
-  message(message) {
+  setMessage(message) {
     this.message = message;
 
     return this;
@@ -51,7 +51,7 @@ class Mail extends EventEmitter {
 
       const timeoutFlag = setTimeout(() => {
         this.removeAllListeners();
-        return reject();
+        return reject(new Error('timeout'));
       }, this.timeout);
 
       this.once(`reply#${id}`, reply => {

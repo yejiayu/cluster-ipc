@@ -4,6 +4,7 @@ const is = require('is-type-of');
 const debug = require('debug')('socket-msessenger:util');
 
 const INT_32_LENGTH = 4;
+const reChinese = /([\u4e00-\u9fa5])+/;
 
 const util = {
   getLength(data) {
@@ -18,14 +19,14 @@ const util = {
       return {};
     }
 
-    const completeData = new Buffer(limit);
+    const completeData = Buffer.alloc(limit);
     data.copy(completeData, 0, 0, limit);
 
     const modLength = data.length - limit;
     if (modLength > 0) {
-      const modData = new Buffer(modLength);
-      data.copy(modData, 0, limit + 1);
+      const modData = Buffer.alloc(modLength);
 
+      data.copy(modData, 0, limit, data.length);
       return {
         completeData,
         modData,
@@ -39,13 +40,19 @@ const util = {
     if (!is.string(data)) {
       data = JSON.stringify(data);
     }
-    const bodyLength = data.length;
 
+    const bodyLength = util.getBodyLength(data);
     const resultData = Buffer.alloc(INT_32_LENGTH + bodyLength);
     resultData.writeInt32BE(bodyLength, 0);
     resultData.write(data, INT_32_LENGTH);
 
     return resultData;
+  },
+
+  getBodyLength(str) {
+    return str.split('').reduce((pre, cur) => {
+      return reChinese.test(cur) ? pre + 3 : pre + 1;
+    }, 0);
   },
 
   decode(data) {

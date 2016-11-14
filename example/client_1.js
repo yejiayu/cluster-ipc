@@ -11,6 +11,10 @@ co(function* gen() {
   yield mailBox.init();
   const mail = mailBox.writeMails();
 
+  mailBox.on('mail', mail2 => {
+    mail2.reply('reply');
+  });
+
   yield mail.target('client_2')
       .setMessage('hello world')
       .send();

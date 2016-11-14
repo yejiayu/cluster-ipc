@@ -20,22 +20,21 @@ class DataEvent extends EventEmitter {
   }
 
   dataHandler(data) {
-    debug(data.toString());
-    if (is.nullOrUndefined(this[INNER_TEMP_DATA])) {
+    if (!this[INNER_TEMP_DATA]) {
       this[INNER_TEMP_DATA] = data;
-    } else {
-      this[INNER_TEMP_DATA] = Buffer
-          .concat([this[INNER_TEMP_DATA], data], this[INNER_TEMP_DATA].length + data.length);
     }
 
     const { completeData, modData } = getCompleteData(data);
 
     if (is.buffer(completeData)) {
       this.emit('dataComplete', completeData);
+    } else {
+      this[INNER_TEMP_DATA] = Buffer
+          .concat([this[INNER_TEMP_DATA], data], this[INNER_TEMP_DATA].length + data.length);
     }
 
     if (is.buffer(modData)) {
-      this[INNER_TEMP_DATA] = modData;
+      this.dataHandler(modData);
     }
   }
 }

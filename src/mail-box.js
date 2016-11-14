@@ -51,13 +51,12 @@ class MailBox extends EventEmitter {
     return mail;
   }
 
-  onMailHandler(mail) {
+  onMailHandler(mail = {}) {
     const { isReply, id } = mail;
 
     const wrapMail = Mail.wrapMail(mail, this.client);
     if (isReply) {
       const nativeMail = this.box.get(id);
-
 
       nativeMail.emit(`reply#${id}`, wrapMail);
       this.box.delete(id);

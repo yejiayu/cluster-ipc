@@ -4,7 +4,7 @@
   "description": "node进程间通信",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "DEBUG=socket-msessenger:* ./node_modules/.bin/mocha --compilers js:babel-core/register",
     "build": "./node_modules/.bin/babel src -d lib",
     "watch": "./node_modules/.bin/babel src -w --out-dir lib",
     "example": "DEBUG=socket-msessenger:* node example/index.js"
@@ -35,7 +35,9 @@
     "co": "^4.6.0",
     "eslint": "^3.6.1",
     "eslint-config-airbnb-base": "^5.0.3",
-    "eslint-plugin-import": "^1.16.0"
+    "eslint-plugin-import": "^1.16.0",
+    "mocha": "^3.1.2",
+    "should": "^11.1.1"
   },
   "homepage": "https://github.com/yejiayu/socket-messager#readme"
 }

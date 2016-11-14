@@ -32,10 +32,10 @@ class Messenger extends SDKBase {
     // debug(mail);
     const { to, from } = mail;
 
-    const clientNameList = this.server.getClientNameList();
+    const connecterNameList = this.server.getConnecterNameList();
 
-    assert(clientNameList.findIndex(name => name === to) !== -1, `can not find to ${to}`);
-    assert(clientNameList.findIndex(name => name === from) !== -1, `can not find from ${from}`);
+    assert(connecterNameList.findIndex(name => name === to) !== -1, `can not find to ${to}`);
+    assert(connecterNameList.findIndex(name => name === from) !== -1, `can not find from ${from}`);
 
     this.server.send(mail);
   }
