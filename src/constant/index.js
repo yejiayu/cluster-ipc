@@ -1,11 +1,6 @@
 'use strict';
 
-const os = require('os');
-const path = require('path');
-
 module.exports = {
-  SOCK_PATH: path.join(os.tmpdir(), 'midway.sock'),
-
   TIMEOUT_TIME: 1000 * 10,
 
   ACTION: {

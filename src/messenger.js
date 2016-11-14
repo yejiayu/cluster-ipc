@@ -11,10 +11,10 @@ const Server = require('./socket/server');
 const BIND = Symbol('bind_handler');
 
 class Messenger extends SDKBase {
-  constructor() {
+  constructor({ sockPath = path.join(os.tmpdir(), 'midway.sock') }) {
     super();
     this.server = new Server();
-    this.sockPath = path.join(os.tmpdir(), 'midway.sock');
+    this.sockPath = sockPath;
   }
 
   * init() {

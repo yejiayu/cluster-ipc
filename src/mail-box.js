@@ -1,17 +1,19 @@
 'use strict';
 
 const assert = require('assert');
+const os = require('os');
+const path = require('path');
 const EventEmitter = require('events');
 const is = require('is-type-of');
 const debug = require('debug')('socket-msessenger:mail-box');
 
-const { SOCK_PATH, TIMEOUT_TIME } = require('./constant');
+const { TIMEOUT_TIME } = require('./constant');
 const { generateMailNo } = require('./util');
 const Client = require('./socket/client');
 const Mail = require('./mail');
 
 class MailBox extends EventEmitter {
-  constructor({ name }) {
+  constructor({ name, sockPath = path.join(os.tmpdir(), 'midway.sock') }) {
     super();
 
     assert(is.string(name) && name.length > 0, 'options.name required');
@@ -21,7 +23,7 @@ class MailBox extends EventEmitter {
     this.autoIncrement = 0;
     this.box = new Map();
 
-    this.client = new Client({ sockPath: SOCK_PATH, name });
+    this.client = new Client({ sockPath, name });
   }
 
   init() {
