@@ -12,6 +12,7 @@ class Connecter extends EventEmitter {
     super();
 
     this.socket = socket;
+    this.hasReady = false;
   }
 
   init() {
