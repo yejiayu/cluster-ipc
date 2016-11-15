@@ -61,7 +61,7 @@ class Server extends sdkBase {
           .findIndex(connecter => !connecter.hasReady);
 
       if (hasReady === -1) {
-        setImmediate(this.send, mail);
+        setImmediate(this.send.bind(this), mail);
       }
       return;
     }
