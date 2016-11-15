@@ -37,7 +37,7 @@ class MailBox extends EventEmitter {
     });
   }
 
-  writeMails({ timeout = TIMEOUT_TIME } = {}) {
+  write({ timeout = TIMEOUT_TIME } = {}) {
     if (!this.client.hasReady) {
       throw new Error('perform the init method');
     }
