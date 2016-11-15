@@ -29,6 +29,7 @@ class Server extends sdkBase {
         connecter.close();
       }
 
+      connecter.hasReady = true;
       connecter.replyRegister();
       connecter.on('data', data => this.dataHandler(data));
       connecter.on('error', error => this.emit('error', error));
@@ -44,25 +45,32 @@ class Server extends sdkBase {
     }
   }
 
-  getConnecterNameList() {
-    return Array.from(this.connecterMap.keys());
+  getConnecterMap() {
+    return this.connecterMap;
   }
 
   send(mail) {
     const { to } = mail;
     const reg = new RegExp(to);
 
-    const matchList = this.getConnecterNameList().filter(name => reg.test(name));
+    const matchList = Array.from(this.connecterMap.keys())
+        .filter(name => reg.test(name));
 
     if (!is.array(matchList) || matchList.length <= 0) {
-      return false;
+      const hasReady = Array.from(this.connecterMap.values())
+          .findIndex(connecter => !connecter.hasReady);
+
+      if (hasReady === -1) {
+        setImmediate(this.send, mail);
+      }
+      return;
     }
     matchList.forEach(name => {
       const connecter = this.connecterMap.get(name);
       connecter.send(mail);
     });
 
-    return true;
+    return;
   }
 
   listen(sockPath) {
