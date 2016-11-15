@@ -26,7 +26,7 @@ class Client extends SDKBase {
       // TODO: error message
       throw new Error();
     }
-    
+
     this.socket.name = name;
     this.name = name;
     this.hasReady = false;

@@ -15,7 +15,7 @@ co(function* gen() {
     mail2.reply('reply');
   });
 
-  yield mail.target('client_2')
+  yield mail.setTo('client_2')
       .setMessage('hello world')
       .send();
 }).catch(error => console.error(error.stack));

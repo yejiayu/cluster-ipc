@@ -2,14 +2,14 @@
 
 const net = require('net');
 const fs = require('fs');
-const sdkBase = require('sdk-base');
+const SDKBase = require('sdk-base');
 const is = require('is-type-of');
 const debug = require('debug')('socket-msessenger:server');
 
 const Connecter = require('./connecter');
 const { ACTION } = require('../constant');
 
-class Server extends sdkBase {
+class Server extends SDKBase {
   constructor() {
     super();
 
@@ -27,6 +27,7 @@ class Server extends sdkBase {
 
       if (action !== ACTION.REGISTER || !is.string(name)) {
         connecter.close();
+        return;
       }
 
       connecter.hasReady = true;
@@ -57,12 +58,12 @@ class Server extends sdkBase {
         .filter(name => reg.test(name));
 
     if (!is.array(matchList) || matchList.length <= 0) {
-      const hasReady = Array.from(this.connecterMap.values())
-          .findIndex(connecter => connecter.hasReady === false);
-
-      if (hasReady !== -1) {
-        setImmediate(this.send.bind(this), mail);
-      }
+      // const hasReady = Array.from(this.connecterMap.values())
+      //     .findIndex(connecter => connecter.hasReady === false);
+      //
+      // if (hasReady !== -1) {
+      //   setImmediate(this.send.bind(this), mail);
+      // }
       return;
     }
     matchList.forEach(name => {
