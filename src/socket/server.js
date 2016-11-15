@@ -58,9 +58,9 @@ class Server extends sdkBase {
 
     if (!is.array(matchList) || matchList.length <= 0) {
       const hasReady = Array.from(this.connecterMap.values())
-          .findIndex(connecter => !connecter.hasReady);
+          .findIndex(connecter => connecter.hasReady === false);
 
-      if (hasReady === -1) {
+      if (hasReady !== -1) {
         setImmediate(this.send.bind(this), mail);
       }
       return;
