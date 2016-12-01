@@ -1,6 +1,6 @@
 {
   "name": "socket-messenger",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "node进程间通信",
   "main": "index.js",
   "scripts": {
