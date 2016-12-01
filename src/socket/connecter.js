@@ -27,7 +27,7 @@ class Connecter extends EventEmitter {
 
   send(mail) {
     const data = { action: ACTION.SEND_MAIL, mail };
-    this.socket.write(encode(data));
+    this.socket.write(data);
   }
 
   close() {

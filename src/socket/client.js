@@ -46,7 +46,7 @@ class Client extends SDKBase {
   }
 
   dataCompleteHandler(completeData) {
-    const decodeData = decode(completeData);
+    const decodeData = completeData;
 
     if (this.hasReady) {
       const { mail } = decodeData;
