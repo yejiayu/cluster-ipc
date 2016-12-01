@@ -60,8 +60,10 @@ class MailBox extends EventEmitter {
     if (isReply) {
       const nativeMail = this.box.get(id);
 
-      nativeMail.emit(`reply#${id}`, wrapMail);
-      this.box.delete(id);
+      if (nativeMail) {
+        nativeMail.emit(`reply#${id}`, wrapMail);
+        this.box.delete(id);
+      }
     } else {
       this.emit('mail', wrapMail);
     }
