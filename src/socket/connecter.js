@@ -18,7 +18,7 @@ class Connecter extends EventEmitter {
   init() {
     this.dataEvent = new DataEvent(this.socket);
 
-    this.dataEvent.on('dataComplete', data => this.emit('data', decode(data)));
+    this.dataEvent.on('dataComplete', data => this.emit('data', data));
   }
 
   replyRegister() {
@@ -27,7 +27,7 @@ class Connecter extends EventEmitter {
 
   send(mail) {
     const data = { action: ACTION.SEND_MAIL, mail };
-    this.socket.write(data);
+    this.socket.write(encode(data));
   }
 
   close() {

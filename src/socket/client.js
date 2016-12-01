@@ -6,7 +6,7 @@ const is = require('is-type-of');
 const SDKBase = require('sdk-base');
 const debug = require('debug')('socket-msessenger:client');
 
-const { encode, decode } = require('../util');
+const { encode } = require('../util');
 const { ACTION } = require('../constant');
 const DataEvent = require('./data_event');
 
