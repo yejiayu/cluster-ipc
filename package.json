@@ -8,7 +8,7 @@
     "build": "./node_modules/.bin/babel src -d lib",
     "watch": "./node_modules/.bin/babel src -w --out-dir lib",
     "example": "DEBUG=socket-msessenger:* node example/index.js",
-    "publish": "npm run build && npm publish`"
+    "publish-npm": "npm run build && npm publish"
   },
   "repository": {
     "type": "git",
