@@ -33,7 +33,6 @@ class Connecter extends EventEmitter {
   close() {
     this.socket.removeAllListeners();
     this.dataEvent.removeAllListeners();
-    this.socket.close();
   }
 }
 

@@ -64,8 +64,8 @@ class Client extends SDKBase {
   }
 
   send(mail) {
-    const data = { action: ACTION.SEND_MAIL, mail };
-    this.socket.write(encode(data));
+    const data = { action: ACTION.SEND_MAIL, payload: { mail } };
+    this.socket.write(encode(JSON.stringify(data)));
   }
 
   register() {

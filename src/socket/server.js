@@ -39,8 +39,9 @@ class Server extends SDKBase {
     });
   }
 
-  dataHandler({ action, mail }) {
+  dataHandler({ action, payload }) {
     if (action === ACTION.SEND_MAIL) {
+      const { mail } = payload
       // TODO: 发送邮件
       this.emit('mail', mail);
     }
