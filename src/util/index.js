@@ -50,9 +50,7 @@ const util = {
   },
 
   getBodyLength(str) {
-    return str.split('').reduce((pre, cur) => {
-      return reChinese.test(cur) ? pre + 3 : pre + 1;
-    }, 0);
+    return new Buffer(str).length;
   },
 
   decode(data) {
