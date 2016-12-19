@@ -4,7 +4,6 @@ const EventEmitter = require('events');
 const debug = require('debug')('socket-msessenger:data_event');
 const ExBuffer = require('ExBuffer');
 
-const exBuffer = new ExBuffer().uint32Head().bigEndian();
 const INNER_TEMP_DATA = Symbol('INNER_TEMP_DATA');
 
 class DataEvent extends EventEmitter {
@@ -15,12 +14,13 @@ class DataEvent extends EventEmitter {
 
     this[INNER_TEMP_DATA] = null;
 
+    this.exBuffer = new ExBuffer().uint32Head().bigEndian();
     this.socket.on('data', data => this.dataHandler(data));
-    exBuffer.on('data', completeData => this.emit('dataComplete', JSON.parse(completeData)));
+    this.exBuffer.on('data', completeData => this.emit('dataComplete', JSON.parse(completeData)));
   }
 
   dataHandler(data) {
-    exBuffer.put(data);
+    this.exBuffer.put(data);
   }
 }
 
