@@ -23,7 +23,7 @@
     "email": "yejiayu.fe@gmail.com"
   },
   "dependencies": {
-    "ExBuffer": "^0.2.4",
+    "ExBuffer": "^0.4.0",
     "babel-polyfill": "^6.16.0",
     "debug": "^2.3.0",
     "is-type-of": "^1.0.0",
