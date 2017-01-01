@@ -19,6 +19,8 @@ class Server extends SDKBase {
   }
 
   init(socket) {
+    fs.chmodSync(this.sockPath, '775');
+
     const connecter = new Connecter(socket);
     connecter.init();
 
@@ -79,7 +81,7 @@ class Server extends SDKBase {
     if (fs.existsSync(sockPath)) {
       fs.unlinkSync(sockPath);
     }
-
+    this.sockPath = sockPath;
     return new Promise(resolve => this.server.listen(sockPath, resolve));
   }
 
