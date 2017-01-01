@@ -32,6 +32,10 @@ class Messenger extends SDKBase {
     // debug(mail);
     this.server.send(mail);
   }
+
+  close() {
+    this.server.close();
+  }
 }
 
 module.exports = Messenger;
