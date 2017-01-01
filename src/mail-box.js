@@ -68,6 +68,10 @@ class MailBox extends EventEmitter {
       this.emit('mail', wrapMail);
     }
   }
+
+  close() {
+    this.client.close();
+  }
 }
 
 module.exports = MailBox;
