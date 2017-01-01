@@ -73,6 +73,10 @@ class Client extends SDKBase {
 
     this.socket.write(encode(JSON.stringify(data)));
   }
+
+  close() {
+    this.socket.destroy();
+  }
 }
 
 module.exports = Client;
