@@ -82,6 +82,10 @@ class Server extends SDKBase {
 
     return new Promise(resolve => this.server.listen(sockPath, resolve));
   }
+
+  close() {
+    this.server.destroy();
+  }
 }
 
 module.exports = Server;
