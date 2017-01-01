@@ -84,7 +84,7 @@ class Server extends SDKBase {
   }
 
   close() {
-    this.server.destroy();
+    this.server.close();
   }
 }
 
