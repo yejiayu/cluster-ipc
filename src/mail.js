@@ -51,7 +51,11 @@ class Mail extends EventEmitter {
 
       const timeoutFlag = setTimeout(() => {
         this.removeAllListeners();
-        return reject(new Error('timeout'));
+        const error = new Error();
+        error.name = 'socket timeout';
+        error.message = this.toJSON();
+
+        return reject(error);
       }, this.timeout);
 
       this.once(`reply#${id}`, reply => {

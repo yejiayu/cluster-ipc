@@ -4,7 +4,6 @@ const is = require('is-type-of');
 const debug = require('debug')('socket-msessenger:util');
 
 const INT_32_LENGTH = 4;
-const reChinese = /([\u4e00-\u9fa5])+/;
 
 const util = {
   getLength(data) {
