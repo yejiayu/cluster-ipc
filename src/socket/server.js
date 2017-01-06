@@ -19,7 +19,9 @@ class Server extends SDKBase {
   }
 
   init(socket) {
-    fs.chmodSync(this.sockPath, '775');
+    if (process.platform !== 'win32') {
+      fs.chmodSync(this.sockPath, '775');
+    }
 
     const connecter = new Connecter(socket);
     connecter.init();
