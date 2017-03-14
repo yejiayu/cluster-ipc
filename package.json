@@ -1,5 +1,5 @@
 {
-  "name": "ipc-messenger",
+  "name": "cluster-ipc",
   "version": "1.0.0",
   "description": "Node IPC with unix socket",
   "main": "index.js",

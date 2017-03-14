@@ -1,4 +1,4 @@
-# ipc-messager
+# cluster-ipc
 > A Node IPC module base on Unix socket
 
 ## Example
@@ -21,7 +21,7 @@ if (cluster.isMaster) {
     await messenger.init()
 
     const masterBox = new Mailbox({ name: 'master' })
-    
+
     masterBox.send({
       to: 'worker2',
       data: 'hello',
