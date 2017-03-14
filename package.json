@@ -4,8 +4,8 @@
   "description": "Node IPC with unix socket",
   "main": "index.js",
   "scripts": {
-    "test": "npm run build && DEBUG=ipc-msessenger:* ./node_modules/.bin/ava -v",
-    "cov": "npm run build && ./node_modules/.bin/nyc ./node_modules/.bin/ava -v",
+    "test": "npm run build && DEBUG=ipc-msessenger:* ./node_modules/.bin/ava -v --serial",
+    "cov": "npm run build && ./node_modules/.bin/nyc ./node_modules/.bin/ava -v --serial",
     "cov-report": "npm run cov && ./node_modules/.bin/nyc report --reporter=html",
     "build": "./node_modules/.bin/babel src -d lib",
     "watch": "./node_modules/.bin/babel src -w --out-dir lib",

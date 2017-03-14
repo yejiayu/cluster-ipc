@@ -1,10 +1,5 @@
 {
-  "parserOptions": {
-    "sourceType": "script",
-  },
   "rules": {
-    "strict": [2, "global"],
-    "global-strict": [0, "always"],
     "no-param-reassign": ["error", { "props": false }],
     "no-underscore-dangle": ["error", { "allowAfterThis": true }],
     "no-use-before-define": ["error", { "functions": false }],
@@ -13,6 +8,5 @@
   "extends": "airbnb-base",
   "env": {
     "node": true,
-    "mocha": true
   }
 }

@@ -3,7 +3,6 @@
 const os = require('os');
 const path = require('path');
 const test = require('ava');
-const assert = require('assert');
 const Messenger = require('../').Messenger;
 const Mailbox = require('../').Mailbox;
 const { ACTION } = require('../lib/constant');
@@ -29,7 +28,7 @@ test('child_process to child_process', async (t) => {
 
   box2.on('request', (payload) => {
     const { id, from: to, data } = payload;
-    assert.equal(data, 'hello world');
+    t.is(data, 'hello world');
     box2.reply({ id, to, data: { message: 'ok hello world'} })
   })
 
@@ -39,9 +38,9 @@ test('child_process to child_process', async (t) => {
   })
 
   const { from, to, data } = reply;
-  assert.equal(from, 'box2');
-  assert.equal(to, 'box1');
-  assert.equal(data.message, 'ok hello world');
+  t.is(from, 'box2');
+  t.is(to, 'box1');
+  t.is(data.message, 'ok hello world');
 })
 
 test('child_process to child_process timeout', async (t) => {
@@ -54,7 +53,7 @@ test('child_process to child_process timeout', async (t) => {
       timeout: 2000,
     })
   } catch (e) {
-    assert.equal(e.name, 'ipc-messenger timeout');
+    t.is(e.name, 'ipc-messenger timeout');
   }
 })
 
@@ -66,7 +65,7 @@ test.cb('broadcast', (t) => {
 
 
   box2.on('request', (payload) => {
-    assert.equal(payload.from, 'box1');
+    t.is(payload.from, 'box1');
     t.end();
   })
 })
@@ -75,7 +74,7 @@ test.cb('online', (t) => {
   const { box1, } = t.context;
 
   box1.on('online', payload => {
-    assert.equal(payload.from, 'box2');
+    t.is(payload.from, 'box2');
     t.end()
   })
 })
