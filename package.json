@@ -7,6 +7,7 @@
     "test": "npm run build && DEBUG=ipc-msessenger:* ./node_modules/.bin/ava -v --serial",
     "cov": "npm run build && ./node_modules/.bin/nyc ./node_modules/.bin/ava -v --serial",
     "cov-report": "npm run cov && ./node_modules/.bin/nyc report --reporter=html",
+    "coverage": "npm run cov && ./node_modules/.bin/nyc report --reporter=text-lcov | coveralls",
     "build": "./node_modules/.bin/babel src -d lib",
     "watch": "./node_modules/.bin/babel src -w --out-dir lib",
     "example": "DEBUG=ipc-msessenger:* node example/index.js",

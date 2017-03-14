@@ -10,5 +10,8 @@ branches:
   only:
   - master
 
+before_script:
+  - npm install -g coveralls
+
 after_script:
-  - npm run cov-report
+  - npm run coverage
