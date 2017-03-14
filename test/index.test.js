@@ -4,9 +4,9 @@ const os = require('os');
 const path = require('path');
 const test = require('ava');
 const assert = require('assert');
-const Messenger = require('../src/messenger');
-const Mailbox = require('../src/mailbox');
-const { ACTION } = require('../src/constant');
+const Messenger = require('../').Messenger;
+const Mailbox = require('../').Mailbox;
+const { ACTION } = require('../lib/constant');
 
 test.beforeEach(async (t) => {
   const sockPath = path.join(os.tmpdir(), `${Date.now()}.sock`)
