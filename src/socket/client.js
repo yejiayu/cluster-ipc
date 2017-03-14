@@ -13,29 +13,20 @@ const DataEvent = require('./data_event');
 const BIND = Symbol('bind_handler');
 
 class Client extends SDKBase {
-  constructor({ sockPath, socket, name }) {
+  constructor({ sockPath, name }) {
     super();
 
     assert(is.string(name) && name.length > 0, 'options.name required');
 
-    if (is.undefined(socket) && is.string(sockPath)) {
-      this.socket = net.connect(sockPath);
-    } else if (is.object(socket)) {
-      this.socket = socket;
-    } else {
-      // TODO: error message
-      throw new Error();
-    }
-
-    this.socket.name = name;
+    this._socket = net.connect(sockPath);
     this.name = name;
-    this.hasReady = false;
+    this.isReady = false;
 
     this.init();
   }
 
   init() {
-    this.dataEvent = new DataEvent(this.socket, this.name);
+    this.dataEvent = new DataEvent(this._socket, this.name);
     this[BIND]();
 
     this.register();
@@ -48,34 +39,33 @@ class Client extends SDKBase {
   dataCompleteHandler(completeData) {
     const decodeData = completeData;
 
-    if (this.hasReady) {
-      const { mail } = decodeData;
-      this.emit('mail', mail);
+    if (this.isReady) {
+      const { action, payload } = decodeData;
+      this.emit('mail', { action, payload });
     } else {
-      const { ready } = decodeData;
+      const { payload } = decodeData;
 
-      if (ready) {
+      if (payload.ready) {
         this.ready(true);
-        this.hasReady = true;
+        this.isReady = true;
       } else {
         this.emit('error', new Error(`${this.name} register fail`));
       }
     }
   }
 
-  send(mail) {
-    const data = { action: ACTION.SEND_MAIL, payload: { mail } };
-    this.socket.write(encode(JSON.stringify(data)));
+  send(data) {
+    this._socket.write(encode(JSON.stringify(data)));
   }
 
   register() {
     const data = { action: ACTION.REGISTER, payload: { name: this.name } };
 
-    this.socket.write(encode(JSON.stringify(data)));
+    this._socket.write(encode(JSON.stringify(data)));
   }
 
   close() {
-    this.socket.destroy();
+    this._socket.destroy();
   }
 }
 

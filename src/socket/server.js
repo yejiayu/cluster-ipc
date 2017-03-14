@@ -1,3 +1,4 @@
+
 'use strict';
 
 const net = require('net');
@@ -10,21 +11,22 @@ const Connecter = require('./connecter');
 const { ACTION } = require('../constant');
 
 class Server extends SDKBase {
-  constructor() {
+  constructor({ sockPath }) {
     super();
 
+    this._sockPath = sockPath;
     this.connecterMap = new Map();
 
-    this.server = net.createServer(socket => this.init(socket));
+    this.server = net.createServer(socket => this._connectHandler(socket));
+    this._listen();
   }
 
-  init(socket) {
+  _connectHandler(socket) {
     if (process.platform !== 'win32') {
-      fs.chmodSync(this.sockPath, '775');
+      fs.chmodSync(this._sockPath, '775');
     }
 
     const connecter = new Connecter(socket);
-    connecter.init();
 
     connecter.once('data', ({ action, payload }) => {
       const { name } = payload;
@@ -36,55 +38,21 @@ class Server extends SDKBase {
 
       connecter.hasReady = true;
       connecter.replyRegister();
-      connecter.on('data', data => this.dataHandler(data));
+      this.emit('connect', { name, connecter });
+      connecter.on('data', data => this.emit('mail', data));
       connecter.on('error', error => this.emit('error', error));
 
       this.connecterMap.set(name, connecter);
     });
   }
 
-  dataHandler({ action, payload }) {
-    if (action === ACTION.SEND_MAIL) {
-      const { mail } = payload;
-      // TODO: 发送邮件
-      this.emit('mail', mail);
+  _listen() {
+    const { _sockPath } = this;
+    if (fs.existsSync(_sockPath)) {
+      fs.unlinkSync(_sockPath);
     }
-  }
 
-  getConnecterMap() {
-    return this.connecterMap;
-  }
-
-  send(mail) {
-    const { to } = mail;
-    const reg = new RegExp(to);
-
-    const matchList = Array.from(this.connecterMap.keys())
-        .filter(name => reg.test(name));
-
-    if (!is.array(matchList) || matchList.length <= 0) {
-      // const hasReady = Array.from(this.connecterMap.values())
-      //     .findIndex(connecter => connecter.hasReady === false);
-      //
-      // if (hasReady !== -1) {
-      //   setImmediate(this.send.bind(this), mail);
-      // }
-      return;
-    }
-    matchList.forEach(name => {
-      const connecter = this.connecterMap.get(name);
-      connecter.send(mail);
-    });
-
-    return;
-  }
-
-  listen(sockPath) {
-    if (fs.existsSync(sockPath)) {
-      fs.unlinkSync(sockPath);
-    }
-    this.sockPath = sockPath;
-    return new Promise(resolve => this.server.listen(sockPath, resolve));
+    this.server.listen(_sockPath, () => this.ready(true));
   }
 
   close() {

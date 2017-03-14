@@ -1,42 +1,47 @@
-# socket-messager
-> Inter-process communication made simple
+# ipc-messager
+> A Node IPC module base on Unix socket
 
 ## Example
-````js
-// server.js
-const Messenger = require('socket-messenger').Messenger;
 
-co(function* gen() {
-  const messenger = new Messenger();
-  yield messenger.init();
-}).catch(error => console.error(error.stack));
+### cluster mode
+```js
+'use strict'
 
-// client_1.js
-const MailBox = require('socket-messenger').MailBox;
+const cluster = require('cluster')
+const os = require('os');
+const path = require('path');
+const Messenger = require('ipc-messenger').Messenger
+const Mailbox = require('ipc-messenger').Mailbox
 
-co(function* gen() {
-  const mailBox = new MailBox({ name: 'client_1' });
-  yield mailBox.init();
-  const mail = mailBox.writeMails();
+const sockPath = path.join(os.tmpdir(), 'ipc-messenger.sock')
 
-  const reply = yield mail.target('client_2')
-      .message('hello world')
-      .send();
-  debug(reply.message) // reply hello world
-}).catch(error => console.error(error.stack));
+if (cluster.isMaster) {
+  !(async function setup() {
+    const messenger = new Messenger({ sockPath })
+    await messenger.init()
 
-// client_2.js
-const MailBox = require('socket-messenger').MailBox;
+    const masterBox = new Mailbox({ name: 'master' })
+    
+    masterBox.send({
+      to: 'worker2',
+      data: 'hello',
+    })
 
-co(function* gen() {
-  const mailBox = new MailBox({ name: 'client_2' });
-  yield mailBox.init();
+    for (let i = 1; i < 5; i++) {
+      cluster.fork({
+        env: { BOX_ID: i }
+      })
+    }
+  })().catch(console.error)  
+} else {
+  const workerBox = new Mailbox({ name: `worker${process.env.BOX_ID}`})
+  workerBox.on('request', mail => {
+    const { to, data, from } = mail
 
-  mailBox.on('mail', mail => {
-    debug(reply.message) // hello world
-    mail.reply('reply hello world');
-  });
-}).catch(error => console.error(error.stack));
-````
-
+    console.log(to) // 'worker2'
+    console.log(from) // 'master'
+    console.log(data) // 'hello'
+  })
+}
+```
 > To be perfect
