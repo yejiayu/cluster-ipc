@@ -14,16 +14,14 @@ test.beforeEach(async (t) => {
   await messenger.init()
 
   const box1 = new Mailbox({ sockPath, name: 'box1' });
-  await box1.init()
   const box2 = new Mailbox({ sockPath, name: 'box2' });
-  await box2.init()
 
   t.context.messenger = messenger;
   t.context.box1 = box1;
   t.context.box2 = box2;
 });
 
-test('child_process to child_process', async (t) => {
+test.cb('child_process to child_process', (t) => {
   const { box1, box2, messenger } = t.context;
 
   box2.on('request', (payload) => {
@@ -32,42 +30,58 @@ test('child_process to child_process', async (t) => {
     box2.reply({ id, to, data: { message: 'ok hello world'} })
   })
 
-  const reply = await box1.send({
-    to: 'box2',
-    data: 'hello world',
-  })
+  box1.on('online', async ({ from }) => {
+    if (from === 'box2') {
+      const reply = await box1.send({
+        to: 'box2',
+        data: 'hello world',
+      })
 
-  const { from, to, data } = reply;
-  t.is(from, 'box2');
-  t.is(to, 'box1');
-  t.is(data.message, 'ok hello world');
+      const { from, to, data } = reply;
+      t.is(from, 'box2');
+      t.is(to, 'box1');
+      t.is(data.message, 'ok hello world');
+      t.end()
+    }
+  })
 })
 
-test('child_process to child_process timeout', async (t) => {
+test.cb('child_process to child_process timeout', (t) => {
   const { box1 } = t.context;
 
-  try {
-    const { from, to, data } = await box1.send({
-      to: 'box2',
-      data: 'hello world',
-      timeout: 2000,
-    })
-  } catch (e) {
-    t.is(e.name, 'ipc-messenger timeout');
-  }
+  box1.on('online', (payload) => {
+    if (payload.from === 'box2') {
+      box1.send({
+        to: 'box2',
+        data: 'hello world',
+        timeout: 2000,
+      }).catch(e => {
+        t.is(e.name, 'ipc-messenger timeout');
+        t.end();
+      })
+    }
+  })
 })
 
 test.cb('broadcast', (t) => {
   const { box1, box2 } = t.context;
-  box1.broadcast({
-    data: { message: '这是一个广播' }
-  })
+  !(async function () {
+    await new Promise((resolve) => {
+      box1.ready(resolve)
+    });
+    await new Promise((resolve) => {
+      box2.ready(resolve)
+    })
 
+    box1.broadcast({
+      data: { message: '这是一个广播' }
+    })
 
-  box2.on('request', (payload) => {
-    t.is(payload.from, 'box1');
-    t.end();
-  })
+    box2.on('request', (payload) => {
+      t.is(payload.from, 'box1');
+      t.end();
+    })
+  })()
 })
 
 test.cb('online', (t) => {

@@ -1,4 +1,4 @@
-'use strict';
+
 
 const assert = require('assert');
 const os = require('os');
@@ -25,28 +25,8 @@ class Mailbox extends Base {
     this.isReady = false;
 
     this._client = new Client({ sockPath, name });
-  }
 
-  init(cb) {
-    const { _client: client } = this;
-
-    client.ready(() => this.ready(true));
     this._bind();
-
-    if (is.function(cb)) {
-      return this.ready(cb);
-    }
-
-    return new Promise((resolve, reject) => {
-      const cancel = setTimeout(() => {
-        reject(new Error(`mailbox:${this.name} ready timeout`));
-      }, 5000);
-      this.ready(() => {
-        this._online();
-        clearTimeout(cancel);
-        return resolve();
-      });
-    });
   }
 
   send({ to, data, oneway = false, timeout = TIMEOUT_TIME }) {
@@ -96,6 +76,11 @@ class Mailbox extends Base {
   }
 
   _bind() {
+    this._client.ready(() => {
+      this.isReady = true;
+      this._online();
+      this.ready(true);
+    });
     this._client.on('mail', mail => this._onMailHandler(mail));
   }
 
@@ -112,7 +97,20 @@ class Mailbox extends Base {
     return this.emit('request', payload);
   }
 
-  _send({ action, payload, timeout }) {
+  async _send({ action, payload, timeout }) {
+    if (this._isReady) {
+      await new Promise((resolve, reject) => {
+        const cancelFlag = setTimeout(function () {
+          return reject(new Error(`${this.name} ready error`));
+        }, 5000);
+
+        this.ready(() => {
+          clearTimeout(cancelFlag);
+          return resolve();
+        });
+      })
+    }
+
     const { id, oneway, isReply, to, from } = payload;
 
     this._client.send({ action, payload });
