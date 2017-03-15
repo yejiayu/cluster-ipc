@@ -17,11 +17,16 @@
 [coveralls-url]: https://coveralls.io/r/yejiayu/cluster-ipc?branch=master
 [david-image]: https://img.shields.io/david/yejiayu/cluster-ipc.svg?style=flat-square
 [david-url]: https://david-dm.org/yejiayu/cluster-ipc
-[node-image]: https://img.shields.io/badge/node.js-%3E=_4.6.1-green.svg?style=flat-square
+[node-image]: https://img.shields.io/badge/node.js-%3E=_6.x-green.svg?style=flat-square
 [node-url]: http://nodejs.org/download/
 [download-image]: https://img.shields.io/npm/dm/cluster-ipc.svg?style=flat-square
 [download-url]: https://npmjs.org/package/cluster-ipc
 [license-image]: https://img.shields.io/npm/l/cluster-ipc.svg
+
+## Install
+```shell
+$ npm i cluster-ipc --save
+```
 
 ## Example
 
