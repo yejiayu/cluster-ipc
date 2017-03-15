@@ -66,4 +66,57 @@ if (cluster.isMaster) {
   })
 }
 ```
+
+## API
+### Method
+#### send
+> send message to another box
+
+```js
+const reply = await box1.send({
+  to: 'box2', // required, target box name support RegExp.
+  data: { action: 'getPid' }, // optional, custom message.
+  oneway: false, // optional, no reply? default false.
+  timeout: 5000, // optional, request timeout, default 5000
+})
+
+console.log(reply); // { id: 1, from: 'box2', to: 'box1', isReply: true, data: { pid: 123 } };
+```
+
+#### reply
+> reply message to sender
+
+```js
+box2.reply({
+  id: 1, // mail id
+  to: 'box1',
+  data: { pid: 123 },
+})
+```
+
+#### broadcast
+> send message to another boxes
+
+```js
+box1.broadcast({
+  data: 'hi, all',
+})
+```
+
+### event
+#### request
+```js
+box1.on('request', payload => {
+  console.log(payload); // { id: 1, from: 'box2', to: 'box1', data: { 'my box2' } }
+})
+```
+#### online
+> other box online event
+
+```js
+box1.on('online', payload => {
+  console.log(payload); // { id: 1, from: 'box2' }
+})
+```
+
 > To be perfect
